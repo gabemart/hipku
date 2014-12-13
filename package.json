@@ -1,0 +1,25 @@
+{
+  "name": "hipku",
+  "version": "0.0.2",
+  "description": "Encode any IP address as a haiku",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"TODO: add tests\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabemart/hipku.git"
+  },
+  "keywords": [
+    "poetry",
+    "ipv4",
+    "ipv6",
+    "haiku"
+  ],
+  "author": "Gabriel Martin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gabemart/hipku/issues"
+  },
+  "homepage": "http://gabrielmartin.net/projects/hipku"
+}
