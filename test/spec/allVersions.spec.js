@@ -1,14 +1,15 @@
 /*
-** Test that a given input results in an output that can
-** be decoded to match the original input. Applicable to
-** all versions.
+** Test that when you take an IP address, encode it, and then decode it
+** again, it matches the original address. These tests are applicable to
+** all versions of Hipku, regardless of changes to the dictionaries or
+** schema.
 */
 
 var Hipku = require('../../index.js');
 
 describe("All versions of Hipku", function() {
   
-  it("should symetrically encode and decode IPv4 addresses", function() {   
+  it("should symmetrically encode and decode IPv4 addresses", function() {   
     expect(
       Hipku.decode(Hipku.encode('0.0.0.0'))
     ).toBe('0.0.0.0');
@@ -26,7 +27,7 @@ describe("All versions of Hipku", function() {
     ).toBe('255.255.255.255');  
   });
   
-  it("should symetrically encode and decode IPv6 addresses", function() { 
+  it("should symmetrically encode and decode IPv6 addresses", function() { 
 
     expect(
       Hipku.decode(Hipku.encode('0:0:0:0:0:0:0:0'))

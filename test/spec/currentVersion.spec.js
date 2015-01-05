@@ -1,8 +1,8 @@
 /*
-** Test that a series of inputs match the outputs
-** specified by the current version's dictionaries
-** and schemas. Tests must be updated whenever changes
-** are made to any dicationary or schema.
+** Test that a series of encoded test IPs match haiku for the current 
+** set of dictionaries and schema, and that a series of decoded test
+** haiku match IPs for the current dictionaries and schema. These tests
+** must be updated whenever the dictionaries or schema are changed.
 */
 
 var Hipku = require('../../index.js');
