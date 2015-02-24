@@ -32,6 +32,6 @@ the lines can be separated either by the newline character `\n` or by a space. B
 
     var hipku = require('hipku');
 
-    hipku.encode(`127.0.0.1`);
+    hipku.encode('127.0.0.1');
 
     hipku.decode('The weary red dove fights in the empty tundra. Jasmine petals dance.');
