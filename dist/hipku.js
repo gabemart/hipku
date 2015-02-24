@@ -264,7 +264,7 @@ function writeHaiku(wordArray, ipv6) {
   /*
   ** Capitalize appropriate words
   */      
-  schema = capitalizeHaiku(schema, nonWords);
+  schema = capitalizeHaiku(schema);
   haiku = schema.join('');
   
   return haiku;
@@ -351,7 +351,7 @@ function getSchema(ipv6, octet) {
   return [schema, nonWords];
 }
 
-function capitalizeHaiku(haikuArray, nonWords) {
+function capitalizeHaiku(haikuArray) {
   var period = '.';
   
   /*
@@ -361,32 +361,13 @@ function capitalizeHaiku(haikuArray, nonWords) {
   
   for (var i = 1; i < haikuArray.length; i++) {
   
-    if (haikuArray[i] === period) {
-      var isWord;
-      
+    if (haikuArray[i] === period && i + 2 < haikuArray.length) {
       /*
       ** If the current entry is a period then the next entry will be
       ** a newLine or a space, so check two positions after and
       ** capitalize that entry, so long as it's a word
       */  
-
-      isWord = true;
-      
-      if (haikuArray[i + 2] === undefined ||
-          haikuArray[i + 2] === null ||
-          haikuArray[i + 2] === '') {
-        isWord = false;
-      }
-      
-      for (var j = 0; j < nonWords.length; j++) {
-        if (haikuArray[i + 2] === nonWords[j]) {
-          isWord = false;
-        }
-      }
-      
-      if (isWord) {
-        haikuArray[i + 2] = capitalizeWord(haikuArray[i + 2]);
-      }
+      haikuArray[i + 2] = capitalizeWord(haikuArray[i + 2]);
     }
   }
   
