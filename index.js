@@ -129,7 +129,7 @@ function padOctets(octetArray, numMissingOctets) {
   aLength = octetArray.length;
   
   /*
-  ** If the first or last octets are blank, zero them
+  ** If the first or last octet is blank, zero them
   */    
   if (octetArray[0] === '') {
     octetArray[0] = paddedOctet;
@@ -366,7 +366,7 @@ function capitalizeHaiku(haikuArray, nonWords) {
       
       /*
       ** If the current entry is a period then the next entry will be
-      ** a newLine or a space, so check two positions ahead and 
+      ** a newLine or a space, so check two positions after and
       ** capitalize that entry, so long as it's a word
       */  
 
