@@ -129,7 +129,7 @@ function padOctets(octetArray, numMissingOctets) {
   aLength = octetArray.length;
   
   /*
-  ** If the first or last octets are blank, zero them
+  ** If the first or last octet is blank, zero them
   */    
   if (octetArray[0] === '') {
     octetArray[0] = paddedOctet;
@@ -244,9 +244,7 @@ function writeHaiku(wordArray, ipv6) {
   var octet, schemaResults, schema, nonWords, haiku;
   
   octet = 'OCTET'; // String to place in schema to show word slots
-  schemaResults = getSchema(ipv6, octet);
-  schema = schemaResults[0];
-  nonWords = schemaResults[1];
+  schema = getSchema(ipv6, octet);
   
   /*
   ** Replace each instance of 'octet' in the schema with a word from
@@ -264,7 +262,7 @@ function writeHaiku(wordArray, ipv6) {
   /*
   ** Capitalize appropriate words
   */      
-  schema = capitalizeHaiku(schema, nonWords);
+  schema = capitalizeHaiku(schema);
   haiku = schema.join('');
   
   return haiku;
@@ -327,12 +325,10 @@ function getSchema(ipv6, octet) {
       var insertSpace = true;
       
       /*
-      ** If the next entry is a nonWord, don't add a space
+      ** If the current entry is a nonWord, don't add a space
       */
-      for (var j = 0; j < nonWords.length; j++) {
-        if (schema[i] === nonWords[j]) {
-            insertSpace = false;
-        }
+      if (schema[i] in nonWords) {
+        insertSpace = false;
       }
       
       /*
@@ -348,10 +344,10 @@ function getSchema(ipv6, octet) {
       }
   }
 
-  return [schema, nonWords];
+  return schema;
 }
 
-function capitalizeHaiku(haikuArray, nonWords) {
+function capitalizeHaiku(haikuArray) {
   var period = '.';
   
   /*
@@ -361,32 +357,13 @@ function capitalizeHaiku(haikuArray, nonWords) {
   
   for (var i = 1; i < haikuArray.length; i++) {
   
-    if (haikuArray[i] === period) {
-      var isWord;
-      
+    if (haikuArray[i] === period && i + 2 < haikuArray.length) {
       /*
       ** If the current entry is a period then the next entry will be
-      ** a newLine or a space, so check two positions ahead and 
+      ** a newLine or a space, so check two positions after and
       ** capitalize that entry, so long as it's a word
       */  
-
-      isWord = true;
-      
-      if (haikuArray[i + 2] === undefined ||
-          haikuArray[i + 2] === null ||
-          haikuArray[i + 2] === '') {
-        isWord = false;
-      }
-      
-      for (var j = 0; j < nonWords.length; j++) {
-        if (haikuArray[i + 2] === nonWords[j]) {
-          isWord = false;
-        }
-      }
-      
-      if (isWord) {
-        haikuArray[i + 2] = capitalizeWord(haikuArray[i + 2]);
-      }
+      haikuArray[i + 2] = capitalizeWord(haikuArray[i + 2]);
     }
   }
   
