@@ -244,9 +244,7 @@ function writeHaiku(wordArray, ipv6) {
   var octet, schemaResults, schema, nonWords, haiku;
   
   octet = 'OCTET'; // String to place in schema to show word slots
-  schemaResults = getSchema(ipv6, octet);
-  schema = schemaResults[0];
-  nonWords = schemaResults[1];
+  schema = getSchema(ipv6, octet);
   
   /*
   ** Replace each instance of 'octet' in the schema with a word from
@@ -327,12 +325,10 @@ function getSchema(ipv6, octet) {
       var insertSpace = true;
       
       /*
-      ** If the next entry is a nonWord, don't add a space
+      ** If the current entry is a nonWord, don't add a space
       */
-      for (var j = 0; j < nonWords.length; j++) {
-        if (schema[i] === nonWords[j]) {
-            insertSpace = false;
-        }
+      if (schema[i] in nonWords) {
+        insertSpace = false;
       }
       
       /*
@@ -348,7 +344,7 @@ function getSchema(ipv6, octet) {
       }
   }
 
-  return [schema, nonWords];
+  return schema;
 }
 
 function capitalizeHaiku(haikuArray) {
