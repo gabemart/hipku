@@ -1,6 +1,6 @@
 {
   "name": "hipku",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Encode any IP address as a haiku",
   "main": "index.js",
   "devDependencies": {
