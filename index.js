@@ -8,10 +8,10 @@
 ;
 var Hipku = (function() {
 /*
-** ############## 
+** ##############
 ** Public Methods
 ** ##############
-*/    
+*/
 
 /*
 ** Object holds all public methods and is returned by the module
@@ -24,39 +24,39 @@ var publicMethods = {};
 var encode = function(ip) {
   var ipv6, decimalOctetArray, factoredOctetArray, encodedWordArray,
     haikuText;
-  
+
   ipv6 = ipIsIpv6(ip);
   decimalOctetArray = splitIp(ip, ipv6);
   factoredOctetArray = factorOctets(decimalOctetArray, ipv6);
   encodedWordArray = encodeWords(factoredOctetArray, ipv6);
   haikuText = writeHaiku(encodedWordArray, ipv6);
-  
+
   return haikuText;
 };
- 
+
 /*
 ** Public method to decode haiku into IP Addresses
-*/  
+*/
 var decode = function(haiku) {
   var wordArray, ipv6, factorArray, octetArray, ipString;
-  
+
   wordArray = splitHaiku(haiku);
   ipv6 = haikuIsIpv6(wordArray);
   factorArray = getFactors(wordArray, ipv6);
   octetArray = getOctets(factorArray, ipv6);
   ipString = getIpString(octetArray, ipv6);
-  
+
   return ipString;
 };
 
 /*
 ** Attach the public methods to the return object
-*/  
+*/
 publicMethods.encode = encode;
 publicMethods.decode = decode;
 
 /*
-** #############################  
+** #############################
 ** Helper functions for encoding
 ** #############################
 */
@@ -72,11 +72,11 @@ function ipIsIpv6(ip) {
 
 function splitIp(ip, ipv6) {
   var octetArray, separator, v6Base, numOctets, decimalOctetArray;
-  
+
   octetArray = [];
   decimalOctetArray = [];
   v6Base = 16;
-  
+
   if (ipv6) {
     separator = ':';
     numOctets = 8;
@@ -84,20 +84,20 @@ function splitIp(ip, ipv6) {
     separator = '.';
     numOctets = 4;
   }
-  
+
   /*
   ** Remove newline and space characters
-  */    
+  */
   ip = ip.replace(/[\n\ ]/g, '');
   octetArray = ip.split(separator);
 
   /*
   ** If IPv6 address is in abbreviated format, we need to replace missing octets with 0
-  */    
+  */
   if (octetArray.length < numOctets) {
     if (ipv6) {
       var numMissingOctets = (numOctets - octetArray.length);
-      
+
       octetArray = padOctets(octetArray, numMissingOctets);
     } else {
       throw new Error('Formatting error in IP Address input.' +
@@ -107,97 +107,97 @@ function splitIp(ip, ipv6) {
 
   /*
   ** Conter IPv6 addresses from hex to decimal
-  */       
+  */
   if (ipv6) {
     for (var i = 0; i < octetArray.length; i++) {
       decimalOctetArray[i] = parseInt(octetArray[i], v6Base);
-    }     
+    }
   } else {
     decimalOctetArray = octetArray;
   }
-  
-  return decimalOctetArray;  
+
+  return decimalOctetArray;
 }
 
 /*
 ** If IPv6 is abbreviated, pad with appropriate number of 0 octets
-*/   
+*/
 function padOctets(octetArray, numMissingOctets) {
   var paddedOctet, aLength;
-  
+
   paddedOctet = 0;
   aLength = octetArray.length;
-  
+
   /*
   ** If the first or last octets are blank, zero them
-  */    
+  */
   if (octetArray[0] === '') {
     octetArray[0] = paddedOctet;
-  }    
+  }
   if (octetArray[aLength - 1] === '') {
     octetArray[aLength - 1] = paddedOctet;
   }
-  
+
   /*
   ** Check the rest of the array for blank octets and pad as needed
-  */ 
+  */
   for (var i = 0; i < aLength; i++) {
     if (octetArray[i] === '') {
       octetArray[i] = paddedOctet;
-      
+
       for (var j = 0; j < numMissingOctets; j++) {
         octetArray.splice(i, 0, paddedOctet);
       }
     }
   }
-  
+
   return octetArray;
 }
 
 /*
 ** Convert each decimal octet into a factor of the divisor (16 or 256)
 ** and a remainder
-*/   
+*/
 function factorOctets(octetArray, ipv6) {
   var divisor, factoredOctetArray;
-  
+
   factoredOctetArray = [];
-  
+
   if (ipv6) {
     divisor = 256;
   } else {
     divisor = 16;
   }
-  
+
   for (var i = 0; i < octetArray.length; i++) {
     var octetValue, factor1, factor2;
-    
+
     octetValue = octetArray[i];
-    
+
     factor1 = octetArray[i] % divisor;
     octetValue = octetValue - factor1;
     factor2 = octetValue / divisor;
-    
+
     factoredOctetArray.push(factor2);
     factoredOctetArray.push(factor1);
-  }   
-  
+  }
+
   return factoredOctetArray;
 }
 
 function encodeWords(factorArray, ipv6) {
   var key, encodedWordArray;
-  
-  encodedWordArray = [];   
+
+  encodedWordArray = [];
   key = getKey(ipv6);
-  
+
   for (var i = 0; i < factorArray.length; i++) {
     var dict;
-    
-    dict = key[i];    
+
+    dict = key[i];
     encodedWordArray[i] = dict[factorArray[i]];
   }
-  
+
   return encodedWordArray;
 }
 
@@ -205,7 +205,7 @@ function encodeWords(factorArray, ipv6) {
 /*
 ** Return an array of dictionaries representing the correct word
 ** order for the haiku
-*/   
+*/
 function getKey(ipv6) {
   var key;
 
@@ -236,37 +236,37 @@ function getKey(ipv6) {
       plantNouns,
       plantVerbs ];
   }
-  
+
   return key;
 }
 
 function writeHaiku(wordArray, ipv6) {
   var octet, schemaResults, schema, nonWords, haiku;
-  
+
   octet = 'OCTET'; // String to place in schema to show word slots
   schemaResults = getSchema(ipv6, octet);
   schema = schemaResults[0];
   nonWords = schemaResults[1];
-  
+
   /*
   ** Replace each instance of 'octet' in the schema with a word from
   ** the encoded word array
-  */     
-  for (var i = 0; i < wordArray.length; i++) {   
+  */
+  for (var i = 0; i < wordArray.length; i++) {
     for (var j = 0; j < schema.length; j++) {
       if (schema[j] === octet) {
         schema[j] = wordArray[i];
         break;
       }
-    }    
+    }
   }
-  
+
   /*
   ** Capitalize appropriate words
-  */      
+  */
   schema = capitalizeHaiku(schema);
   haiku = schema.join('');
-  
+
   return haiku;
 }
 
@@ -325,7 +325,7 @@ function getSchema(ipv6, octet) {
   */
   for (var i = 1; i < schema.length; i++) {
       var insertSpace = true;
-      
+
       /*
       ** If the next entry is a nonWord, don't add a space
       */
@@ -334,7 +334,7 @@ function getSchema(ipv6, octet) {
             insertSpace = false;
         }
       }
-      
+
       /*
       ** If the previous entry is a newLine, don't add a space
       */
@@ -353,156 +353,156 @@ function getSchema(ipv6, octet) {
 
 function capitalizeHaiku(haikuArray) {
   var period = '.';
-  
+
   /*
   ** Always capitalize the first word
-  */    
+  */
   haikuArray[0] = capitalizeWord(haikuArray[0]);
-  
+
   for (var i = 1; i < haikuArray.length; i++) {
-  
+
     if (haikuArray[i] === period && i + 2 < haikuArray.length) {
       /*
       ** If the current entry is a period then the next entry will be
-      ** a newLine or a space, so check two positions ahead and 
+      ** a newLine or a space, so check two positions ahead and
       ** capitalize that entry, so long as it's a word
-      */  
+      */
       haikuArray[i + 2] = capitalizeWord(haikuArray[i + 2]);
     }
   }
-  
+
   return haikuArray;
 }
 
 function capitalizeWord(word) {
   word = word.substring(0,1).toUpperCase() +
     word.substring(1, word.length);
-  
+
   return word;
 }
 
 /*
-** #############################  
+** #############################
 ** Helper functions for decoding
 ** #############################
 */
 
 function splitHaiku(haiku) {
   var wordArray;
-  
+
   haiku = haiku.toLowerCase();
-  
+
   /*
-  ** Replace newline characters with spaces 
-  */   
+  ** Replace newline characters with spaces
+  */
   haiku = haiku.replace(/\n/g, ' ');
-  
+
   /*
   ** Remove anything that's not a letter, a space or a dash
-  */      
-  haiku = haiku.replace(/[^a-z\ -]/g, ''); 
+  */
+  haiku = haiku.replace(/[^a-z\ -]/g, '');
   wordArray = haiku.split(' ');
-  
+
   /*
   ** Remove any blank entries
-  */  
+  */
   for (var i = 0; i < wordArray.length; i++) {
     if (wordArray[i] === '') {
       wordArray.splice(i, 1);
     }
-  }    
-  
+  }
+
   return wordArray;
 }
 
 function haikuIsIpv6(wordArray) {
   var ipv6, key, dict;
-  
+
   key = getKey(false);
   dict = key[0];
   ipv6 = true;
-  
+
   /*
   ** Compare each word in the haiku against each word in the first
-  ** dictionary defined in the IPv4 key. If there's a match, the 
+  ** dictionary defined in the IPv4 key. If there's a match, the
   ** current haiku is IPv4. If not, IPv6.
   */
   for (var i = 0; i < wordArray.length; i++) {
     var currentWord = wordArray[i];
-    
+
     for (var j = 0; j < dict.length; j++) {
       if (currentWord === dict[j]) {
           ipv6 = false;
           break;
-      }   
+      }
     }
-    
+
     if (ipv6 === false) {
       break;
     }
   }
-  
+
   return ipv6;
 }
 
-/* 
+/*
 ** Return an array of factors and remainders for each encoded
 ** octet-value
-*/  
+*/
 function getFactors(wordArray, ipv6) {
   var key, factorArray, wordArrayPosition;
-  
+
   key = getKey(ipv6);
   factorArray = [];
   wordArrayPosition = 0;
-  
+
   /*
   ** Get the first dictionary from the key. Check the first entry in
-  ** the encoded word array to see if it's in that dictionary. If it 
+  ** the encoded word array to see if it's in that dictionary. If it
   ** is, store the dictionary offset and move onto the next dictionary
   ** and the next word in the encoded words array. If there isn't a
   ** match, keep the same dictionary but check the next word in the
   ** array. Keep going till we have an offset for each dictionary in
   ** the key.
-  */   
+  */
   for (var i = 0; i < key.length; i++) {
     var result, factor, newPosition;
-    
+
     result = [];
     result = getFactorFromWord(key[i], key.length,
-                wordArray, wordArrayPosition);  
+                wordArray, wordArrayPosition);
     factor = result[0];
     newPosition = result[1];
     wordArrayPosition = newPosition;
-    
+
     factorArray.push(factor);
   }
-  
+
   return factorArray;
 }
 
 function getFactorFromWord(dict, maxLength, words, position) {
   var factor = null;
-  
+
   for (var j = 0; j < dict.length; j++) {
     var dictEntryLength, wordToCheck;
-    
+
     /*
     ** Get the number of words in the dictionary entry
     */
     dictEntryLength = dict[j].split(' ').length;
-    
+
     /*
     ** build a string to compare against the dictionary entry
     ** by joining the appropriate number of wordArray entries
     */
     wordToCheck =
-      words.slice(position, position + dictEntryLength); 
+      words.slice(position, position + dictEntryLength);
     wordToCheck = wordToCheck.join(' ');
-  
+
     if (dict[j] === wordToCheck) {
       factor = j;
-      
+
       /*
       ** If the dictionary entry word count is greater than one,
       ** increment the position counter by the difference to
@@ -512,9 +512,9 @@ function getFactorFromWord(dict, maxLength, words, position) {
       break;
     }
   }
-  
+
   position = position + 1;
-  
+
   if (factor === null) {
     if (position >= maxLength) {
       /*
@@ -522,15 +522,15 @@ function getFactorFromWord(dict, maxLength, words, position) {
       ** all necessary dictionaries, so throw an error
       */
       throw new Error('Decoding error: one or more dictionary words' +
-                       'missing from input haiku');                
-    } else { 
+                       'missing from input haiku');
+    } else {
       /*
       ** Couldn't find the current word in the current dictionary,
       ** try the next word
       */
       return getFactorFromWord(dict, maxLength, words, position);
     }
-  } else { 
+  } else {
     /*
     ** Found the word - return the dictionary offset and the new
     ** word array position
@@ -541,42 +541,42 @@ function getFactorFromWord(dict, maxLength, words, position) {
 
 function getOctets(factorArray, ipv6) {
   var octetArray, multiplier;
-  
+
   octetArray = [];
   if (ipv6) {
     multiplier = 256;
   } else {
     multiplier = 16;
   }
-  
+
   for (var i = 0; i < factorArray.length; i = i + 2) {
     var factor1, factor2, octet;
-    
+
     factor1 = factorArray[i];
     factor2 = factorArray[i + 1];
     octet = (factor1 * multiplier) + factor2;
-    
+
     if (ipv6) {
       octet = octet.toString(16);
     }
-    
+
     octetArray.push(octet);
-  }    
-  
+  }
+
   return octetArray;
 }
 
 function getIpString(octetArray, ipv6) {
   var ipString, separator;
-  
+
   ipString = '';
-  
+
   if (ipv6) {
     separator = ':';
   } else {
     separator = '.';
   }
-  
+
   for (var i = 0; i < octetArray.length; i++) {
     if (i > 0) {
       ipString += separator;
@@ -588,7 +588,7 @@ function getIpString(octetArray, ipv6) {
 }
 
 /*
-** ############ 
+** ############
 ** Dictionaries
 ** ############
 */
@@ -634,7 +634,7 @@ animalColors = ['beige',
   'pink',
   'red',
   'white'];
-  
+
 animalNouns = ['ape',
   'bear',
   'crow',
@@ -668,7 +668,7 @@ animalVerbs = ['aches',
   'thrives',
   'wakes',
   'yawns'];
-  
+
 natureAdjectives = ['ancient',
   'barren',
   'blazing',
@@ -685,7 +685,7 @@ natureAdjectives = ['ancient',
   'serene',
   'sunlit',
   'wind-swept'];
-  
+
 natureNouns = ['canyon',
   'clearing',
   'desert',
@@ -719,7 +719,7 @@ plantNouns = ['autumn colors',
   'water lillies',
   'willow branches',
   'yellowwood leaves'];
-  
+
 plantVerbs = ['blow',
   'crunch',
   'dance',
@@ -1254,7 +1254,7 @@ nouns = ['ants',
   'wraiths',
   'wrens',
   'yaks'];
-  
+
 verbs = ['aid',
   'arm',
   'awe',
@@ -1511,7 +1511,11 @@ verbs = ['aid',
   'taunt',
   'teach',
   'tend'];
-  
-module.exports = publicMethods;
-  
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = publicMethods;
+} else {
+  return publicMethods;
+}
+
 })();
