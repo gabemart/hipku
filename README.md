@@ -6,7 +6,7 @@ For full documentation and a working demo, check out http://gabrielmartin.net/pr
 
 ## Installation
 
-Install with `npm install hipku` or use a browser-ready file in the `dist` folder.
+Install with `npm install hipku`. `index.js` can also be used directly in the browser.
 
 ## Usage
 
@@ -17,17 +17,17 @@ When decoding a hipku, such as:
     The weary red dove
     fights in the empty tundra.
     Jasmine petals dance.
-  
+
 the lines can be separated either by the newline character `\n` or by a space. Both will produce the same result.
 
     Hipku.decode('The weary red dove\nfights in the empty tundra.\nJasmine petals dance.');
-    
+
     > "254.53.93.114"
-    
+
     Hipku.decode('The weary red dove fights in the empty tundra. Jasmine petals dance.');
-    
+
     > "254.53.93.114"
-  
+
 ### Node.js
 
     var hipku = require('hipku');
